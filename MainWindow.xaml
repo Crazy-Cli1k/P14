@@ -1,0 +1,64 @@
+﻿<Window x:Class="P14.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:P14"
+        xmlns:converters="clr-namespace:P14.Converters"
+        mc:Ignorable="d"
+        Title="MVVM_Example" Height="500" Width="400">
+    <Window.Resources>
+        <converters:DiscountToStrikelineConverter x:Key="DecorationConverter"/>
+        <converters:DiscountToVisibilityConverter x:Key="DiscountConverter"/>
+    </Window.Resources>
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Column="0" DataContext="{Binding SelectedCar}" Grid.ColumnSpan="2">
+            <TextBlock Text="Выбранный элемент" Margin="0,0,-233,0" />
+            <TextBlock Text="Модель" />
+            <TextBox Text="{Binding Model, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBlock Text="Максимальная скрорость, км/ч" />
+            <TextBox Text="{Binding MaxSpeed, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBlock Text="Цена, руб." />
+            <TextBox Text="{Binding Price, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBlock Text="Скидка" />
+            <TextBox x:Name ="DescountBox" Text="{Binding Descount, UpdateSourceTrigger=PropertyChanged}"/>
+            <ComboBox x:Name="CategoryBox" SelectionChanged="ComboBox_SelectionChanged">
+                <TextBlock>Пассажирский транспорт</TextBlock>
+                <TextBlock>Грузовой</TextBlock>
+            </ComboBox>
+            <Button Click="Add_Click" Content="+"/>
+            <Button Click="Delete_Click" Content="-"/>
+            <Button Click="Button_Click" Content="Запись в json"/>
+        </StackPanel>
+        <ListBox Grid.Column="0" Grid.Row="0" ItemsSource="{Binding Cars}"
+         SelectedItem="{Binding SelectedCar}" Grid.ColumnSpan="2" Margin="0,235,0,0">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Margin="5">
+                        <TextBlock FontSize="18" Text="{Binding Path=Model}" />
+                        <TextBlock Text="{Binding Path=MaxSpeed}" />
+                        <TextBlock Text="{Binding Path=Price}" />
+                        <TextBlock>
+                           <Run Text="Цена" />
+                           <Run Text="{Binding Price}"
+                             TextDecorations="{Binding HasDiscount,
+                             Converter={StaticResource DecorationConverter}}" />
+                           <Run Text="рублей" />
+                        </TextBlock>                        <TextBlock
+                             Visibility="{Binding HasDiscount,Converter={StaticResource DiscountConverter}}"
+                             Foreground="Red"
+                             FontSize="12" FontWeight="SemiBold">
+                             <Run Text="СКИДКА! НОВАЯ ЦЕНА:" />
+                             <Run Text="{Binding DiscountPrice, Mode=OneWay}" />
+                             <Run Text="рублей." />
+                        </TextBlock>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </Grid>
+</Window>
